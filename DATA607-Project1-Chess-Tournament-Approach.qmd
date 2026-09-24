@@ -1,0 +1,188 @@
+---
+title: "DATA 607 Project 1 – Chess Tournament Approach"
+author: "Patricio Romero"
+date: "2026-09-24"
+format:
+  html:
+    toc: true
+    code-fold: false
+execute:
+  echo: true
+  warning: false
+  message: false
+editor: visual
+---
+
+```{=html}
+<style>
+table {
+  font-size: 0.80rem;
+}
+
+pre,
+code {
+  font-size: 0.78rem;
+}
+
+pre {
+  overflow-x: auto;
+}
+</style>
+```
+
+## Introduction
+
+Chess tournament cross-tables contain information about players, ratings, scores, opponents, and game results in a semi-structured text format. Although the file is readable to a person, it is not immediately suitable for analysis or database storage.
+
+The objective of this project is to use R to read and transform the provided `tournamentinfo.txt` file into a structured CSV dataset. The final dataset will contain each player's name, state, total points, pre-tournament rating, and average pre-tournament rating of the opponents faced.
+
+The project will also validate the transformed data and perform a small exploratory data analysis before generating the final `chess_tournament_results.csv` file.
+
+## Data Source
+
+The data were provided by the professor in the file `tournamentinfo.txt`. The file contains the results of a seven-round chess tournament with 64 players.
+
+Each player is represented by two lines. The first line contains the player's pairing number, name, total points, and results for each round. The second line contains the player's state, USCF identification number, pre-tournament rating, post-tournament rating, and color played in each round.
+
+Round results such as `W 39`, `L 8`, or `D 12` identify a win, loss, or draw and the pairing number of the opponent. Codes without an opponent number, including `B`, `H`, `U`, and `X`, represent special tournament outcomes and will not be used when calculating the average opponent rating.
+
+## Data Dictionary
+
+The final CSV file will contain one row for each player and the following variables:
+
+| Variable | Description |
+|------------------------------------|------------------------------------|
+| `player_name` | Full name of the chess player |
+| `state` | Player's state or province abbreviation |
+| `total_points` | Total tournament points earned by the player |
+| `pre_rating` | Player's rating before the tournament |
+| `average_opponent_pre_rating` | Average pre-tournament rating of the player's numbered opponents |
+
+The average opponent rating will be calculated by identifying the opponent pairing numbers in the round results, matching those numbers to the corresponding players, retrieving their pre-tournament ratings, and calculating the arithmetic mean.
+
+## Planned Approach
+
+The project will follow these steps:
+
+1.  Read all lines from `tournamentinfo.txt` into R.
+2.  Identify the two lines associated with each tournament player.
+3.  Extract the pairing number, player name, state, total points, and pre-tournament rating.
+4.  Extract the numbered opponents from the seven round-result fields.
+5.  Exclude special tournament codes that do not identify an opponent.
+6.  Match each opponent pairing number to the corresponding player's pre-tournament rating.
+7.  Calculate and round the average opponent pre-rating for every player.
+8.  Combine the calculated values into a tidy dataset with one row per player.
+9.  Validate row counts, column types, missing values, duplicate players, and rating ranges.
+10. Confirm that Gary Hua's average opponent pre-rating is `1605`, as shown in the assignment example.
+11. Perform a small exploratory data analysis of player ratings and opponent strength.
+12. Export the final dataset as `chess_tournament_results.csv`.
+
+The original text file will remain unchanged. All cleaning, transformation, calculation, validation, visualization, and CSV creation will be performed reproducibly in the Quarto document.
+
+## Data Import and Initial Inspection
+
+The required packages are loaded and the original tournament text file is read into R. Each line is initially retained as text so that the structure can be inspected before extracting individual variables.
+
+```{r load-and-read-data}
+library(readr)
+library(dplyr)
+library(stringr)
+library(ggplot2)
+library(skimr)
+library(knitr)
+
+raw_lines <- read_lines(
+  "tournamentinfo.txt",
+  progress = FALSE
+)
+
+length(raw_lines)
+head(raw_lines, 8)
+```
+
+## Identifying Player Records
+
+Player records are identified by lines that begin with a pairing number followed by a vertical separator. These lines contain the player's name, total points, and round results. The following line contains the player's state and rating information.
+
+```{r identify-player-records}
+player_line_indices <- which(
+  str_detect(raw_lines, "^\\s*[0-9]+\\s*\\|")
+)
+
+number_of_players <- length(player_line_indices)
+
+number_of_players
+head(player_line_indices)
+```
+
+## Preliminary Data Inspection
+
+The preliminary inspection confirms that the source file can be read successfully and that the expected number of player records can be identified. No tournament calculations or final transformations are performed at this stage.
+
+```{r preliminary-inspection}
+inspection_summary <- data.frame(
+  measure = c(
+    "Raw text lines",
+    "Identified player records"
+  ),
+  value = c(
+    length(raw_lines),
+    number_of_players
+  )
+)
+
+knitr::kable(
+  inspection_summary,
+  col.names = c("Measure", "Value"),
+  caption = "Preliminary inspection of the tournament file"
+)
+```
+
+The source file contains 196 text lines, from which 64 player records were identified. These results are consistent with the expected structure of the tournament cross-table and support the planned transformation.
+
+## Validation Plan
+
+The transformed dataset will be validated before it is exported. The following checks will be performed:
+
+1.  Confirm that the final dataset contains 64 player records.
+2.  Confirm that the final CSV contains the five variables required by the assignment.
+3.  Verify that each pairing number identifies only one player.
+4.  Check for missing player names, states, total points, and pre-tournament ratings.
+5.  Confirm that total points and ratings are stored as numeric variables.
+6.  Verify that numbered opponents match valid pairing numbers.
+7.  Exclude tournament codes without opponent numbers from the opponent-rating calculation.
+8.  Check that each calculated opponent average is based only on games with an identified opponent.
+9.  Confirm that Gary Hua's opponent rating average rounds to `1605`.
+10. Verify that the generated CSV can be read back into R without changing its row count or column structure.
+
+These checks will help detect parsing errors, invalid matches, missing values, and inconsistencies before the final dataset is published.
+
+## Expected Output
+
+The Quarto code will generate a file named:
+
+`chess_tournament_results.csv`
+
+The CSV will contain 64 player records and the following five columns:
+
+- `player_name`
+- `state`
+- `total_points`
+- `pre_rating`
+- `average_opponent_pre_rating`
+
+The expected first record is:
+
+| player_name | state | total_points | pre_rating | average_opponent_pre_rating |
+|-------------|-------|-------------:|-----------:|----------------------------:|
+| Gary Hua    | ON    |          6.0 |       1794 |                        1605 |
+
+The final CSV will be stored in the project folder with the original `tournamentinfo.txt` file and the reproducible Quarto document. This structure will allow another person to run the code and reproduce the transformed dataset.
+
+## Planned Deliverables
+
+The completed project will include the original `tournamentinfo.txt` file, the reproducible Quarto source file, the generated `chess_tournament_results.csv` file, and the rendered HTML report. The code and data will be available through GitHub, and the rendered report will be published online for review.
+
+## AI Use
+
+ChatGPT was used to help interpret the assignment requirements, organize the planned approach, improve the English writing, explain the tournament cross-table structure, and provide coding guidance. I will run the R code, review the transformed data, validate the results, and confirm the final conclusions myself.
