@@ -1,7 +1,7 @@
 ---
-title: "DATA 607 Project 1 – Chess Tournament Approach"
+title: "DATA 607 Project 1 – Chess Tournament Code Base"
 author: "Patricio Romero"
-date: "2026-09-24"
+date: "2026-09-25"
 format:
   html:
     toc: true
@@ -44,51 +44,50 @@ The data were provided by the professor in the file `tournamentinfo.txt`. The fi
 
 Each player is represented by two lines. The first line contains the player's pairing number, name, total points, and results for each round. The second line contains the player's state, USCF identification number, pre-tournament rating, post-tournament rating, and color played in each round.
 
-Round results such as `W 39`, `L 8`, or `D 12` identify a win, loss, or draw and the pairing number of the opponent. Codes without an opponent number, including `B`, `H`, `U`, and `X`, represent special tournament outcomes and will not be used when calculating the average opponent rating.
+Round results such as `W 39`, `L 8`, or `D 12` identify a win, loss, or draw and the pairing number of the opponent. Codes without an opponent number, including `B`, `H`, `U`, and `X`, represent special tournament outcomes and are not used when calculating the average opponent rating.
 
 ## Data Dictionary
 
-The final CSV file will contain one row for each player and the following variables:
+The final CSV file contains one row for each player and the following variables:
 
 | Variable | Description |
-|------------------------------------|------------------------------------|
+|:---|:---|
 | `player_name` | Full name of the chess player |
 | `state` | Player's state or province abbreviation |
 | `total_points` | Total tournament points earned by the player |
 | `pre_rating` | Player's rating before the tournament |
 | `average_opponent_pre_rating` | Average pre-tournament rating of the player's numbered opponents |
 
-The average opponent rating will be calculated by identifying the opponent pairing numbers in the round results, matching those numbers to the corresponding players, retrieving their pre-tournament ratings, and calculating the arithmetic mean.
+The average opponent rating is calculated by identifying the opponent pairing numbers in the round results, matching those numbers to the corresponding players, retrieving their pre-tournament ratings, and calculating the arithmetic mean.
 
 ## Planned Approach
 
-The project will follow these steps:
+The project follows these steps:
 
-1.  Read all lines from `tournamentinfo.txt` into R.
-2.  Identify the two lines associated with each tournament player.
-3.  Extract the pairing number, player name, state, total points, and pre-tournament rating.
-4.  Extract the numbered opponents from the seven round-result fields.
-5.  Exclude special tournament codes that do not identify an opponent.
-6.  Match each opponent pairing number to the corresponding player's pre-tournament rating.
-7.  Calculate and round the average opponent pre-rating for every player.
-8.  Combine the calculated values into a tidy dataset with one row per player.
-9.  Validate row counts, column types, missing values, duplicate players, and rating ranges.
-10. Confirm that Gary Hua's average opponent pre-rating is `1605`, as shown in the assignment example.
-11. Perform a small exploratory data analysis of player ratings and opponent strength.
-12. Export the final dataset as `chess_tournament_results.csv`.
+1. Read all lines from `tournamentinfo.txt` into R.
+2. Identify the two lines associated with each player.
+3. Extract the pairing number, player name, state, total points, and pre-tournament rating.
+4. Extract the numbered opponents from the seven round-result fields.
+5. Exclude special tournament codes that do not identify an opponent.
+6. Match each opponent number to the corresponding player's pre-tournament rating.
+7. Calculate and round the average opponent pre-rating for every player.
+8. Create a tidy dataset with one row per player.
+9. Validate the transformed data.
+10. Confirm that Gary Hua's average opponent pre-rating is `1605`.
+11. Export the final dataset as `chess_tournament_results.csv`.
+12. Perform a small exploratory data analysis.
 
-The original text file will remain unchanged. All cleaning, transformation, calculation, validation, visualization, and CSV creation will be performed reproducibly in the Quarto document.
+The original text file remains unchanged. All transformations, calculations, validations, and exports are performed reproducibly in this Quarto document.
 
 ## Data Import and Initial Inspection
 
-The required packages are loaded and the original tournament text file is read into R. Each line is initially retained as text so that the structure can be inspected before extracting individual variables.
+The required packages are loaded and the original tournament text file is read into R.
 
 ```{r load-and-read-data}
 library(readr)
 library(dplyr)
 library(stringr)
 library(ggplot2)
-library(skimr)
 library(knitr)
 
 raw_lines <- read_lines(
@@ -96,28 +95,70 @@ raw_lines <- read_lines(
   progress = FALSE
 )
 
-length(raw_lines)
-head(raw_lines, 8)
+file_summary <- data.frame(
+  measure = c(
+    "Source file",
+    "Raw text lines"
+  ),
+  value = c(
+    "tournamentinfo.txt",
+    length(raw_lines)
+  )
+)
+
+knitr::kable(
+  file_summary,
+  col.names = c("Measure", "Value"),
+  align = c("l", "l"),
+  caption = "Initial inspection of the source file"
+)
 ```
 
 ## Identifying Player Records
 
-Player records are identified by lines that begin with a pairing number followed by a vertical separator. These lines contain the player's name, total points, and round results. The following line contains the player's state and rating information.
+Player records are identified by lines that begin with a pairing number followed by a vertical separator. The following line contains the player's state and rating information.
 
 ```{r identify-player-records}
 player_line_indices <- which(
-  str_detect(raw_lines, "^\\s*[0-9]+\\s*\\|")
+  str_detect(
+    raw_lines,
+    "^\\s*[0-9]+\\s*\\|"
+  )
 )
 
 number_of_players <- length(player_line_indices)
 
-number_of_players
-head(player_line_indices)
+player_record_summary <- data.frame(
+  measure = "Identified player records",
+  value = number_of_players
+)
+
+knitr::kable(
+  player_record_summary,
+  col.names = c("Measure", "Value"),
+  align = c("l", "r"),
+  caption = "Player record identification summary"
+)
+
+player_line_preview <- data.frame(
+  pairing_number = seq_len(6),
+  source_line = head(player_line_indices, 6)
+)
+
+knitr::kable(
+  player_line_preview,
+  col.names = c(
+    "Pairing No.",
+    "Source Line"
+  ),
+  align = c("r", "r"),
+  caption = "Location of the first six player records"
+)
 ```
 
 ## Preliminary Data Inspection
 
-The preliminary inspection confirms that the source file can be read successfully and that the expected number of player records can be identified. No tournament calculations or final transformations are performed at this stage.
+The preliminary inspection confirms that the source file contains 196 text lines and 64 identifiable player records.
 
 ```{r preliminary-inspection}
 inspection_summary <- data.frame(
@@ -134,55 +175,471 @@ inspection_summary <- data.frame(
 knitr::kable(
   inspection_summary,
   col.names = c("Measure", "Value"),
+  align = c("l", "r"),
   caption = "Preliminary inspection of the tournament file"
 )
 ```
 
-The source file contains 196 text lines, from which 64 player records were identified. These results are consistent with the expected structure of the tournament cross-table and support the planned transformation.
+## Extracting Basic Player Information
 
-## Validation Plan
+The first transformation extracts the pairing number, player name, state, total points, and pre-tournament rating for each player.
 
-The transformed dataset will be validated before it is exported. The following checks will be performed:
+```{r extract-basic-player-information}
+player_lines <- raw_lines[player_line_indices]
+detail_lines <- raw_lines[player_line_indices + 1]
 
-1.  Confirm that the final dataset contains 64 player records.
-2.  Confirm that the final CSV contains the five variables required by the assignment.
-3.  Verify that each pairing number identifies only one player.
-4.  Check for missing player names, states, total points, and pre-tournament ratings.
-5.  Confirm that total points and ratings are stored as numeric variables.
-6.  Verify that numbered opponents match valid pairing numbers.
-7.  Exclude tournament codes without opponent numbers from the opponent-rating calculation.
-8.  Check that each calculated opponent average is based only on games with an identified opponent.
-9.  Confirm that Gary Hua's opponent rating average rounds to `1605`.
-10. Verify that the generated CSV can be read back into R without changing its row count or column structure.
+player_fields <- str_split_fixed(
+  player_lines,
+  "\\|",
+  11
+)
 
-These checks will help detect parsing errors, invalid matches, missing values, and inconsistencies before the final dataset is published.
+detail_fields <- str_split_fixed(
+  detail_lines,
+  "\\|",
+  11
+)
+
+basic_players <- data.frame(
+  pairing_number = parse_integer(
+    player_fields[, 1]
+  ),
+  player_name = str_to_title(
+    str_squish(player_fields[, 2])
+  ),
+  state = str_squish(
+    detail_fields[, 1]
+  ),
+  total_points = parse_double(
+    player_fields[, 3]
+  ),
+  pre_rating = parse_integer(
+    str_match(
+      detail_lines,
+      "R:\\s*([0-9]+)"
+    )[, 2]
+  )
+)
+
+knitr::kable(
+  head(basic_players),
+  col.names = c(
+    "Pairing No.",
+    "Player",
+    "State",
+    "Points",
+    "Pre-Rating"
+  ),
+  align = c("r", "l", "c", "r", "r"),
+  digits = c(0, NA, NA, 1, 0),
+  caption = "Basic information for the first six players"
+)
+```
+
+## Extracting Opponent Pairing Numbers
+
+The seven round fields contain game results and, when applicable, the pairing number of the opponent. Special results without an opponent number are converted to missing values and excluded.
+
+```{r extract-opponent-numbers}
+round_results <- player_fields[, 4:10]
+
+opponent_numbers <- lapply(
+  seq_len(nrow(round_results)),
+  function(player_row) {
+    opponents <- parse_integer(
+      str_extract(
+        round_results[player_row, ],
+        "[0-9]+"
+      )
+    )
+
+    opponents[!is.na(opponents)]
+  }
+)
+
+names(opponent_numbers) <-
+  basic_players$pairing_number
+
+gary_opponents <- data.frame(
+  round = seq_along(opponent_numbers[[1]]),
+  opponent_pairing_number =
+    opponent_numbers[[1]]
+)
+
+knitr::kable(
+  gary_opponents,
+  col.names = c(
+    "Round",
+    "Opponent Pairing No."
+  ),
+  align = c("r", "r"),
+  caption = "Gary Hua's identified opponents"
+)
+
+opponent_count_summary <- data.frame(
+  pairing_number =
+    basic_players$pairing_number[1:10],
+  player_name =
+    basic_players$player_name[1:10],
+  opponents_identified =
+    lengths(opponent_numbers)[1:10]
+)
+
+knitr::kable(
+  opponent_count_summary,
+  col.names = c(
+    "Pairing No.",
+    "Player",
+    "Opponents Identified"
+  ),
+  align = c("r", "l", "r"),
+  caption = paste(
+    "Opponent counts for",
+    "the first ten players"
+  )
+)
+```
+
+## Calculating Average Opponent Ratings
+
+Each opponent pairing number is matched to the corresponding player's pre-tournament rating. The identified ratings are averaged and rounded to the nearest whole number.
+
+```{r calculate-opponent-averages}
+pre_ratings_by_pairing <- setNames(
+  basic_players$pre_rating,
+  basic_players$pairing_number
+)
+
+average_opponent_ratings <- sapply(
+  opponent_numbers,
+  function(opponents) {
+    opponent_ratings <-
+      pre_ratings_by_pairing[
+        as.character(opponents)
+      ]
+
+    round(
+      mean(
+        opponent_ratings,
+        na.rm = TRUE
+      )
+    )
+  }
+)
+
+basic_players$average_opponent_pre_rating <-
+  as.integer(average_opponent_ratings)
+
+gary_validation <- basic_players |>
+  filter(player_name == "Gary Hua")
+
+gary_vertical <- data.frame(
+  measure = c(
+    "Pairing number",
+    "Player name",
+    "State",
+    "Total points",
+    "Pre-tournament rating",
+    "Average opponent pre-rating"
+  ),
+  value = c(
+    gary_validation$pairing_number,
+    gary_validation$player_name,
+    gary_validation$state,
+    sprintf(
+      "%.1f",
+      gary_validation$total_points
+    ),
+    gary_validation$pre_rating,
+    gary_validation$
+      average_opponent_pre_rating
+  )
+)
+
+knitr::kable(
+  gary_vertical,
+  col.names = c("Measure", "Value"),
+  align = c("l", "l"),
+  caption = paste(
+    "Validation of Gary Hua's",
+    "calculated result"
+  )
+)
+```
+
+## Creating and Validating the Final Dataset
+
+The required variables are selected and arranged into the final dataset. Validation checks confirm the number of players, required columns, missing values, duplicate pairing numbers, valid opponent references, and Gary Hua's expected result.
+
+```{r create-and-validate-final-dataset}
+chess_tournament_results <- basic_players |>
+  select(
+    player_name,
+    state,
+    total_points,
+    pre_rating,
+    average_opponent_pre_rating
+  )
+
+invalid_opponent_numbers <- sum(
+  !unlist(opponent_numbers) %in%
+    basic_players$pairing_number
+)
+
+validation_summary <- data.frame(
+  check = c(
+    "Player records",
+    "Final variables",
+    "Missing player names",
+    "Missing states",
+    "Missing total points",
+    "Missing pre-ratings",
+    "Missing opponent averages",
+    "Duplicate pairing numbers",
+    "Invalid opponent numbers",
+    "Gary Hua opponent average"
+  ),
+  result = c(
+    nrow(chess_tournament_results),
+    ncol(chess_tournament_results),
+    sum(is.na(
+      chess_tournament_results$player_name
+    )),
+    sum(is.na(
+      chess_tournament_results$state
+    )),
+    sum(is.na(
+      chess_tournament_results$total_points
+    )),
+    sum(is.na(
+      chess_tournament_results$pre_rating
+    )),
+    sum(is.na(
+      chess_tournament_results$
+        average_opponent_pre_rating
+    )),
+    sum(duplicated(
+      basic_players$pairing_number
+    )),
+    invalid_opponent_numbers,
+    chess_tournament_results |>
+      filter(player_name == "Gary Hua") |>
+      pull(average_opponent_pre_rating)
+  )
+)
+
+knitr::kable(
+  validation_summary,
+  col.names = c(
+    "Validation Check",
+    "Result"
+  ),
+  align = c("l", "r"),
+  caption = paste(
+    "Validation results for",
+    "the transformed dataset"
+  )
+)
+
+stopifnot(
+  nrow(chess_tournament_results) == 64,
+  ncol(chess_tournament_results) == 5,
+  !anyNA(chess_tournament_results),
+  !anyDuplicated(basic_players$pairing_number),
+  invalid_opponent_numbers == 0,
+  gary_validation$
+    average_opponent_pre_rating == 1605
+)
+```
+
+## Exporting the Final Dataset
+
+The validated dataset is exported as a CSV file and then imported back into R to confirm that its structure was preserved.
+
+```{r export-and-check-csv}
+write_csv(
+  chess_tournament_results,
+  "chess_tournament_results.csv"
+)
+
+csv_check <- read_csv(
+  "chess_tournament_results.csv",
+  show_col_types = FALSE
+)
+
+csv_validation <- data.frame(
+  measure = c(
+    "CSV file exists",
+    "Player records",
+    "Variables",
+    "Column names preserved"
+  ),
+  value = c(
+    file.exists(
+      "chess_tournament_results.csv"
+    ),
+    nrow(csv_check),
+    ncol(csv_check),
+    identical(
+      names(csv_check),
+      names(chess_tournament_results)
+    )
+  )
+)
+
+knitr::kable(
+  csv_validation,
+  col.names = c("Validation Check", "Result"),
+  align = c("l", "l"),
+  caption = "Validation of the exported CSV file"
+)
+```
+
+## Exploratory Data Analysis
+
+Summary statistics describe the tournament participants, their pre-tournament ratings, and the average strength of their opponents.
+
+```{r descriptive-statistics}
+tournament_summary <- data.frame(
+  measure = c(
+    "Number of players",
+    "Mean pre-rating",
+    "Median pre-rating",
+    "Minimum pre-rating",
+    "Maximum pre-rating",
+    "Mean opponent rating"
+  ),
+  value = c(
+    nrow(chess_tournament_results),
+    round(
+      mean(chess_tournament_results$pre_rating),
+      1
+    ),
+    median(
+      chess_tournament_results$pre_rating
+    ),
+    min(
+      chess_tournament_results$pre_rating
+    ),
+    max(
+      chess_tournament_results$pre_rating
+    ),
+    round(
+      mean(
+        chess_tournament_results$
+          average_opponent_pre_rating
+      ),
+      1
+    )
+  )
+)
+
+knitr::kable(
+  tournament_summary,
+  col.names = c("Measure", "Value"),
+  align = c("l", "r"),
+  caption = "Summary statistics for the tournament"
+)
+```
+
+The tournament included 64 players. The mean pre-tournament rating was approximately 1378.5, while the median was 1407. Ratings ranged from 377 to 1794. The overall mean opponent rating was approximately 1378.6.
+
+## Player Rating and Opponent Strength
+
+The following visualization compares each player's pre-tournament rating with the average pre-tournament rating of the opponents faced.
+
+```{r rating-opponent-plot, fig.width=8, fig.height=5}
+ggplot(
+  chess_tournament_results,
+  aes(
+    x = pre_rating,
+    y = average_opponent_pre_rating
+  )
+) +
+  geom_point(
+    color = "#2C7FB8",
+    size = 2.5,
+    alpha = 0.75
+  ) +
+  geom_smooth(
+    method = "lm",
+    se = FALSE,
+    color = "#D95F0E",
+    linewidth = 0.9
+  ) +
+  labs(
+    title = paste(
+      "Player Rating and",
+      "Average Opponent Rating"
+    ),
+    x = "Player Pre-Tournament Rating",
+    y = "Average Opponent Pre-Tournament Rating"
+  ) +
+  theme_minimal()
+```
+
+The upward trend indicates that players with higher pre-tournament ratings generally faced stronger opponents during the tournament.
+
+## Leading Tournament Performances
+
+Players are ranked by total tournament points. Pre-tournament rating is used to order players with the same number of points.
+
+```{r leading-performances}
+leading_players <- chess_tournament_results |>
+  arrange(
+    desc(total_points),
+    desc(pre_rating)
+  ) |>
+  slice_head(n = 10)
+
+knitr::kable(
+  leading_players,
+  col.names = c(
+    "Player",
+    "State",
+    "Points",
+    "Rating",
+    "Opponent Avg."
+  ),
+  align = c("l", "c", "r", "r", "r"),
+  digits = c(NA, NA, 1, 0, 0),
+  caption = "Ten leading tournament performances"
+)
+```
+
+## Conclusion
+
+The original semi-structured tournament cross-table was successfully transformed into a tidy dataset containing 64 player records and the five variables required by the assignment.
+
+The validation found no missing required values, duplicate pairing numbers, or invalid opponent references. Gary Hua's calculated average opponent pre-rating was `1605`, which matches the expected assignment result.
+
+The completed dataset was exported as `chess_tournament_results.csv` and successfully read back into R with its 64 rows, five columns, and original column names preserved.
 
 ## Expected Output
 
-The Quarto code will generate a file named:
+The generated file is:
 
 `chess_tournament_results.csv`
 
-The CSV will contain 64 player records and the following five columns:
+The first record is:
 
-- `player_name`
-- `state`
-- `total_points`
-- `pre_rating`
-- `average_opponent_pre_rating`
+| Measure | Value |
+|:---|:---|
+| Player name | Gary Hua |
+| State | ON |
+| Total points | 6.0 |
+| Pre-tournament rating | 1794 |
+| Average opponent pre-rating | 1605 |
 
-The expected first record is:
+## Deliverables
 
-| player_name | state | total_points | pre_rating | average_opponent_pre_rating |
-|-------------|-------|-------------:|-----------:|----------------------------:|
-| Gary Hua    | ON    |          6.0 |       1794 |                        1605 |
+The completed project includes:
 
-The final CSV will be stored in the project folder with the original `tournamentinfo.txt` file and the reproducible Quarto document. This structure will allow another person to run the code and reproduce the transformed dataset.
-
-## Planned Deliverables
-
-The completed project will include the original `tournamentinfo.txt` file, the reproducible Quarto source file, the generated `chess_tournament_results.csv` file, and the rendered HTML report. The code and data will be available through GitHub, and the rendered report will be published online for review.
+- `tournamentinfo.txt`
+- `DATA607-Project1-Chess-Tournament-Code-Base.qmd`
+- `DATA607-Project1-Chess-Tournament-Code-Base.html`
+- `chess_tournament_results.csv`
 
 ## AI Use
 
-ChatGPT was used to help interpret the assignment requirements, organize the planned approach, improve the English writing, explain the tournament cross-table structure, and provide coding guidance. I will run the R code, review the transformed data, validate the results, and confirm the final conclusions myself.
+ChatGPT was used to help interpret the assignment requirements, organize the workflow, improve the English writing, explain the tournament cross-table structure, and provide coding guidance. I ran the code, reviewed the transformed data, validated the results, and confirmed the conclusions myself.
