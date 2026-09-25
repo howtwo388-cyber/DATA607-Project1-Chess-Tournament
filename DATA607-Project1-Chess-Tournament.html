@@ -9,7 +9,7 @@
 <meta name="author" content="Patricio Romero">
 <meta name="dcterms.date" content="2026-09-25">
 
-<title>DATA 607 Project 1 – Chess Tournament Code Base</title>
+<title>DATA 607 Project 1 – Chess Tournament</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -63,17 +63,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="DATA607-Project1-Chess-Tournament-Approach_files/libs/clipboard/clipboard.min.js"></script>
-<script src="DATA607-Project1-Chess-Tournament-Approach_files/libs/quarto-html/quarto.js" type="module"></script>
-<script src="DATA607-Project1-Chess-Tournament-Approach_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="DATA607-Project1-Chess-Tournament-Approach_files/libs/quarto-html/popper.min.js"></script>
-<script src="DATA607-Project1-Chess-Tournament-Approach_files/libs/quarto-html/tippy.umd.min.js"></script>
-<script src="DATA607-Project1-Chess-Tournament-Approach_files/libs/quarto-html/anchor.min.js"></script>
-<link href="DATA607-Project1-Chess-Tournament-Approach_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="DATA607-Project1-Chess-Tournament-Approach_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="DATA607-Project1-Chess-Tournament-Approach_files/libs/bootstrap/bootstrap.min.js"></script>
-<link href="DATA607-Project1-Chess-Tournament-Approach_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="DATA607-Project1-Chess-Tournament-Approach_files/libs/bootstrap/bootstrap-138a6193a3bd40baf1e627da441a4734.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="DATA607-Project1-Chess-Tournament_files/libs/clipboard/clipboard.min.js"></script>
+<script src="DATA607-Project1-Chess-Tournament_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="DATA607-Project1-Chess-Tournament_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="DATA607-Project1-Chess-Tournament_files/libs/quarto-html/popper.min.js"></script>
+<script src="DATA607-Project1-Chess-Tournament_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="DATA607-Project1-Chess-Tournament_files/libs/quarto-html/anchor.min.js"></script>
+<link href="DATA607-Project1-Chess-Tournament_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="DATA607-Project1-Chess-Tournament_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="DATA607-Project1-Chess-Tournament_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="DATA607-Project1-Chess-Tournament_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="DATA607-Project1-Chess-Tournament_files/libs/bootstrap/bootstrap-138a6193a3bd40baf1e627da441a4734.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 
 
 </head>
@@ -89,7 +89,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
   <li><a href="#data-source" id="toc-data-source" class="nav-link" data-scroll-target="#data-source">Data Source</a></li>
   <li><a href="#data-dictionary" id="toc-data-dictionary" class="nav-link" data-scroll-target="#data-dictionary">Data Dictionary</a></li>
-  <li><a href="#planned-approach" id="toc-planned-approach" class="nav-link" data-scroll-target="#planned-approach">Planned Approach</a></li>
+  <li><a href="#project-workflow" id="toc-project-workflow" class="nav-link" data-scroll-target="#project-workflow">Project Workflow</a></li>
   <li><a href="#data-import-and-initial-inspection" id="toc-data-import-and-initial-inspection" class="nav-link" data-scroll-target="#data-import-and-initial-inspection">Data Import and Initial Inspection</a></li>
   <li><a href="#identifying-player-records" id="toc-identifying-player-records" class="nav-link" data-scroll-target="#identifying-player-records">Identifying Player Records</a></li>
   <li><a href="#preliminary-data-inspection" id="toc-preliminary-data-inspection" class="nav-link" data-scroll-target="#preliminary-data-inspection">Preliminary Data Inspection</a></li>
@@ -112,7 +112,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">DATA 607 Project 1 – Chess Tournament Code Base</h1>
+<h1 class="title">DATA 607 Project 1 – Chess Tournament</h1>
 </div>
 
 
@@ -206,8 +206,8 @@ pre {
 </table>
 <p>The average opponent rating is calculated by identifying the opponent pairing numbers in the round results, matching those numbers to the corresponding players, retrieving their pre-tournament ratings, and calculating the arithmetic mean.</p>
 </section>
-<section id="planned-approach" class="level2">
-<h2 class="anchored" data-anchor-id="planned-approach">Planned Approach</h2>
+<section id="project-workflow" class="level2">
+<h2 class="anchored" data-anchor-id="project-workflow">Project Workflow</h2>
 <p>The project follows these steps:</p>
 <ol type="1">
 <li>Read all lines from <code>tournamentinfo.txt</code> into R.</li>
@@ -1126,7 +1126,7 @@ pre {
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="DATA607-Project1-Chess-Tournament-Approach_files/figure-html/rating-opponent-plot-1.png" class="img-fluid figure-img" width="768"></p>
+<p><img src="DATA607-Project1-Chess-Tournament_files/figure-html/rating-opponent-plot-1.png" class="img-fluid figure-img" width="768"></p>
 </figure>
 </div>
 </div>
@@ -1292,8 +1292,8 @@ pre {
 <p>The completed project includes:</p>
 <ul>
 <li><code>tournamentinfo.txt</code></li>
-<li><code>DATA607-Project1-Chess-Tournament-Code-Base.qmd</code></li>
-<li><code>DATA607-Project1-Chess-Tournament-Code-Base.html</code></li>
+<li><code>DATA607-Project1-Chess-Tournament.qmd</code></li>
+<li><code>DATA607-Project1-Chess-Tournament.html</code></li>
 <li><code>chess_tournament_results.csv</code></li>
 </ul>
 </section>

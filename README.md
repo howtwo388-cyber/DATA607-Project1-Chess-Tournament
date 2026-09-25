@@ -56,10 +56,8 @@ The exploratory visualization indicates that players with higher pre-tournament 
 ## Repository Files
 
 - `tournamentinfo.txt`: Original tournament cross-table
-- `DATA607-Project1-Chess-Tournament-Approach.qmd`: Approach source document
-- `DATA607-Project1-Chess-Tournament-Approach.html`: Rendered approach
-- `DATA607-Project1-Chess-Tournament-Code-Base.qmd`: Complete reproducible code
-- `DATA607-Project1-Chess-Tournament-Code-Base.html`: Rendered code-base report
+- `DATA607-Project1-Chess-Tournament.qmd`: Complete reproducible Quarto source
+- `DATA607-Project1-Chess-Tournament.html`: Rendered final report
 - `chess_tournament_results.csv`: Final transformed dataset
 - `DATA607-Project1-Chess-Tournament.Rproj`: RStudio project file
 
@@ -70,10 +68,9 @@ player_name,state,total_points,pre_rating,average_opponent_pre_rating
 Gary Hua,ON,6,1794,1605
 ```
 
-## Published Reports
+## Published Report
 
-- [Project 1 Approach](https://rpubs.com/howtwo3/data607-project1-chess-tournament-approach)
-- [Project 1 Code Base](https://rpubs.com/howtwo3/ata607-project1-chess-tournament-code-base)
+- [DATA 607 Project 1 – Chess Tournament](https://rpubs.com/howtwo3/ata607-project1-chess-tournament-code-base)
 
 ## GitHub Repository
 

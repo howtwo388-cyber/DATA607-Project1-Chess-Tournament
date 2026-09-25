@@ -2,3 +2,7 @@
 .Rhistory
 .RData
 .Ruserdata
+.DS_Store
+.Rproj.user/
+rsconnect/
+DATA607-Project1-Chess-Tournament/

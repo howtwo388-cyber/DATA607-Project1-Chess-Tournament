@@ -1,5 +1,5 @@
 ---
-title: "DATA 607 Project 1 – Chess Tournament Code Base"
+title: "DATA 607 Project 1 – Chess Tournament"
 author: "Patricio Romero"
 date: "2026-09-25"
 format:
@@ -60,19 +60,19 @@ The final CSV file contains one row for each player and the following variables:
 
 The average opponent rating is calculated by identifying the opponent pairing numbers in the round results, matching those numbers to the corresponding players, retrieving their pre-tournament ratings, and calculating the arithmetic mean.
 
-## Planned Approach
+## Project Workflow
 
 The project follows these steps:
 
-1. Read all lines from `tournamentinfo.txt` into R.
-2. Identify the two lines associated with each player.
-3. Extract the pairing number, player name, state, total points, and pre-tournament rating.
-4. Extract the numbered opponents from the seven round-result fields.
-5. Exclude special tournament codes that do not identify an opponent.
-6. Match each opponent number to the corresponding player's pre-tournament rating.
-7. Calculate and round the average opponent pre-rating for every player.
-8. Create a tidy dataset with one row per player.
-9. Validate the transformed data.
+1.  Read all lines from `tournamentinfo.txt` into R.
+2.  Identify the two lines associated with each player.
+3.  Extract the pairing number, player name, state, total points, and pre-tournament rating.
+4.  Extract the numbered opponents from the seven round-result fields.
+5.  Exclude special tournament codes that do not identify an opponent.
+6.  Match each opponent number to the corresponding player's pre-tournament rating.
+7.  Calculate and round the average opponent pre-rating for every player.
+8.  Create a tidy dataset with one row per player.
+9.  Validate the transformed data.
 10. Confirm that Gary Hua's average opponent pre-rating is `1605`.
 11. Export the final dataset as `chess_tournament_results.csv`.
 12. Perform a small exploratory data analysis.
@@ -623,21 +623,21 @@ The generated file is:
 
 The first record is:
 
-| Measure | Value |
-|:---|:---|
-| Player name | Gary Hua |
-| State | ON |
-| Total points | 6.0 |
-| Pre-tournament rating | 1794 |
-| Average opponent pre-rating | 1605 |
+| Measure                     | Value    |
+|:----------------------------|:---------|
+| Player name                 | Gary Hua |
+| State                       | ON       |
+| Total points                | 6.0      |
+| Pre-tournament rating       | 1794     |
+| Average opponent pre-rating | 1605     |
 
 ## Deliverables
 
 The completed project includes:
 
 - `tournamentinfo.txt`
-- `DATA607-Project1-Chess-Tournament-Code-Base.qmd`
-- `DATA607-Project1-Chess-Tournament-Code-Base.html`
+- `DATA607-Project1-Chess-Tournament.qmd`
+- `DATA607-Project1-Chess-Tournament.html`
 - `chess_tournament_results.csv`
 
 ## AI Use
