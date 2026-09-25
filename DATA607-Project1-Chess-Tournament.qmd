@@ -51,7 +51,7 @@ Round results such as `W 39`, `L 8`, or `D 12` identify a win, loss, or draw and
 The final CSV file contains one row for each player and the following variables:
 
 | Variable | Description |
-|:---|:---|
+|:-----------------------------------|:-----------------------------------|
 | `player_name` | Full name of the chess player |
 | `state` | Player's state or province abbreviation |
 | `total_points` | Total tournament points earned by the player |
