@@ -640,6 +640,16 @@ The completed project includes:
 - `DATA607-Project1-Chess-Tournament.html`
 - `chess_tournament_results.csv`
 
+
+## Video Presentation
+
+The following video presents the complete DATA 607 Project 1 analysis, including the transformation of the chess tournament text file, calculation of average opponent ratings, data validation, exploratory analysis, and creation of the final CSV dataset.
+
+{{< video https://youtu.be/F4OqKHdMOX0 >}}
+
+YouTube: [DATA 607 Project 1 – Chess Tournament](https://youtu.be/F4OqKHdMOX0)
+
+
 ## AI Use
 
 ChatGPT was used to help interpret the assignment requirements, organize the workflow, improve the English writing, explain the tournament cross-table structure, and provide coding guidance. I ran the code, reviewed the transformed data, validated the results, and confirmed the conclusions myself.
